@@ -60,7 +60,7 @@ TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/prebuilt/kernel
 BOARD_CUSTOM_BOOTIMG_MK := $(DEVICE_PATH)/mkbootimg.mk
 else
 TARGET_KERNEL_CONFIG := cedric_defconfig
-TARGET_KERNEL_SOURCE := kernel/motorola/msm8937
+TARGET_KERNEL_SOURCE := kernel/motorola/cedric
 endif
 
 # Partitions
