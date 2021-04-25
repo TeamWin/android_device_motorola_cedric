@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2f961e0e_25236a5f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 414
+      },
+      "writtenOn": "2021-04-25T12:34:53Z",
+      "side": 1,
+      "message": "boots, seems to work, reduces image size (about 700kb)",
+      "revId": "f059f6a4b38274927b6e808a188be02d43c2e971",
+      "serverId": "9c1c7d72-6534-4d44-b0ea-39f63e804833"
+    }
+  ]
+}
