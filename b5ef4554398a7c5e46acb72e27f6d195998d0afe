@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c22ea303_1f71030e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 414
+      },
+      "writtenOn": "2021-04-25T08:03:20Z",
+      "side": 1,
+      "message": "Nano is 1MB fat and the image was exactly 1MB too large... I guess you can include bash but need to leave nano excluded.",
+      "revId": "b5ef4554398a7c5e46acb72e27f6d195998d0afe",
+      "serverId": "9c1c7d72-6534-4d44-b0ea-39f63e804833"
+    }
+  ]
+}
