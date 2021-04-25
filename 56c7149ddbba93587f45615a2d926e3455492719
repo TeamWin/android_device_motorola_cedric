@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "78cc9cbf_48f64e5a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 414
+      },
+      "writtenOn": "2021-04-25T08:05:55Z",
+      "side": 1,
+      "message": "I added my suggestion as patch set 2 (why can I even do that? it\u0027s not my commit. well I\u0027m new to Gerrit). You may want to change the commit message or revert back to PS1.",
+      "revId": "56c7149ddbba93587f45615a2d926e3455492719",
+      "serverId": "9c1c7d72-6534-4d44-b0ea-39f63e804833"
+    }
+  ]
+}
