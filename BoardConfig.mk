@@ -54,13 +54,13 @@ BOARD_KERNEL_PAGESIZE := 2048
 BOARD_MKBOOTIMG_ARGS := --ramdisk_offset $(BOARD_RAMDISK_OFFSET)
 BOARD_KERNEL_IMAGE_NAME := Image.gz
 BOARD_KERNEL_SEPARATED_DT := true
+BOARD_CUSTOM_BOOTIMG_MK := $(DEVICE_PATH)/mkbootimg.mk
 ifneq ($(WITH_KERNEL_SOURCE),true)
 TARGET_PREBUILT_DTB := $(DEVICE_PATH)/prebuilt/dt.img
 TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/prebuilt/kernel
-BOARD_CUSTOM_BOOTIMG_MK := $(DEVICE_PATH)/mkbootimg.mk
 else
-TARGET_KERNEL_CONFIG := cedric_defconfig
-TARGET_KERNEL_SOURCE := kernel/motorola/cedric
+TARGET_KERNEL_CONFIG := cedric_recovery_defconfig
+TARGET_KERNEL_SOURCE := kernel/motorola/msm8953
 endif
 
 # Partitions

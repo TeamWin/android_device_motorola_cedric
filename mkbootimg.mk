@@ -1,30 +1,59 @@
-LOCAL_PATH := $(call my-dir)
+ifeq ($(strip $(TARGET_PREBUILT_DTB)),)
 
-## Build and run dtbtool
-DTBTOOL := $(HOST_OUT_EXECUTABLES)/dtbToolCM$(HOST_EXECUTABLE_SUFFIX)
-LZ4_DT_IMAGE := $(PRODUCT_OUT)/dt.img
-
-ifndef TARGET_PREBUILT_DTB
-$(INSTALLED_DTIMAGE_TARGET): $(DTBTOOL) $(INSTALLED_KERNEL_TARGET)
-	$(call pretty,"Target dt image: $@")
-	$(DTBTOOL) $(BOARD_DTBTOOL_ARGS) -o $@ -s $(BOARD_KERNEL_PAGESIZE) -p $(KERNEL_OUT)/scripts/dtc/ $(KERNEL_OUT)/arch/$(KERNEL_ARCH)/boot/
-	$(hide) chmod a+r $@
-	lz4 -9 < $@ > $(LZ4_DT_IMAGE) || lz4c -c1 -y $@ $(LZ4_DT_IMAGE)
-	$(hide) $(ACP) $(LZ4_DT_IMAGE) $@
-	@echo "Made DT image: $@"
+ifeq ($(strip $(TARGET_CUSTOM_DTBTOOL)),)
+DTBTOOL_NAME := dtbToolCM
 else
-$(INSTALLED_DTIMAGE_TARGET): $(TARGET_PREBUILT_DTB)
-	cp $(TARGET_PREBUILT_DTB) $(INSTALLED_DTIMAGE_TARGET)
+DTBTOOL_NAME := $(TARGET_CUSTOM_DTBTOOL)
 endif
 
-## Overload bootimg generation: Same as the original, + --dt arg
-$(INSTALLED_BOOTIMAGE_TARGET): $(MKBOOTIMG) $(INTERNAL_BOOTIMAGE_FILES) $(BOOTIMAGE_EXTRA_DEPS)
-	$(call pretty,"Target boot image: $@")
-	$(hide) $(MKBOOTIMG) $(INTERNAL_BOOTIMAGE_ARGS) $(INTERNAL_MKBOOTIMG_VERSION_ARGS) $(BOARD_MKBOOTIMG_ARGS) --output $@
-	$(hide) $(call assert-max-image-size,$@,$(BOARD_BOOTIMAGE_PARTITION_SIZE))
+DTBTOOL := $(HOST_OUT_EXECUTABLES)/$(DTBTOOL_NAME)$(HOST_EXECUTABLE_SUFFIX)
 
-## Overload recoveryimg generation: Same as the original, + --dt arg
+INSTALLED_DTIMAGE_TARGET := $(PRODUCT_OUT)/dt.img
+
+ifeq ($(strip $(TARGET_CUSTOM_DTBTOOL)),)
+# dtbToolCM will search subdirectories
+possible_dtb_dirs = $(KERNEL_OUT)/arch/$(KERNEL_ARCH)/boot/
+else
+# Most specific paths must come first in possible_dtb_dirs
+possible_dtb_dirs = $(KERNEL_OUT)/arch/$(KERNEL_ARCH)/boot/dts/ $(KERNEL_OUT)/arch/$(KERNEL_ARCH)/boot/
+endif
+
+define build-dtimage-target
+    $(call pretty,"Target dt image: $@")
+    $(hide) for dir in $(possible_dtb_dirs); do \
+        if [ -d "$$dir" ]; then \
+            dtb_dir="$$dir"; \
+            break; \
+        fi; \
+    done; \
+    $(DTBTOOL) $(BOARD_DTBTOOL_ARGS) -o $@ -s $(BOARD_KERNEL_PAGESIZE) -p $(KERNEL_OUT)/scripts/dtc/ "$$dtb_dir";
+    $(hide) chmod a+r $@
+endef
+
+$(INSTALLED_DTIMAGE_TARGET): $(DTBTOOL) $(INSTALLED_KERNEL_TARGET)
+	$(build-dtimage-target)
+	@echo -e ${CL_CYN}"Made DT image: $@"${CL_RST}
+
+ALL_DEFAULT_INSTALLED_MODULES += $(INSTALLED_DTIMAGE_TARGET)
+ALL_MODULES.$(LOCAL_MODULE).INSTALLED += $(INSTALLED_DTIMAGE_TARGET)
+
+.PHONY: dtimage
+dtimage: $(INSTALLED_DTIMAGE_TARGET)
+
+else
+
+$(INSTALLED_DTIMAGE_TARGET): $(TARGET_PREBUILT_DTB)
+	cp $(TARGET_PREBUILT_DTB) $(INSTALLED_DTIMAGE_TARGET)
+
+ALL_DEFAULT_INSTALLED_MODULES += $(INSTALLED_DTIMAGE_TARGET)
+ALL_MODULES.$(LOCAL_MODULE).INSTALLED += $(INSTALLED_DTIMAGE_TARGET)
+
+.PHONY: dtimage
+dtimage: $(INSTALLED_DTIMAGE_TARGET)
+
+endif
+
 $(INSTALLED_RECOVERYIMAGE_TARGET): $(MKBOOTIMG) $(recovery_ramdisk) $(recovery_kernel) \
-	$(RECOVERYIMAGE_EXTRA_DEPS)
-	@echo ----- Making recovery image ------
+		$(RECOVERYIMAGE_EXTRA_DEPS)
+	@echo -e ${CL_CYN}"----- Making recovery image ------"${CL_RST}
 	$(call build-recoveryimage-target, $@)
